@@ -17,6 +17,7 @@
 
 <script>
 import axios from "axios";
+import { mapActions, mapState } from 'vuex';
 
 export default {
   name: "",
@@ -29,9 +30,14 @@ export default {
     };
   },
   components: {},
-  computed: {},
-  created() {},
+  computed: {
+    ...mapState(['list'])
+  },
+  created() {
+      this.getObj()
+  },
   methods: {
+    ...mapActions(["getObj"]),
     /**
      * 改变眼睛
      * 1、改变type属性

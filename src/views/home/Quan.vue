@@ -6,7 +6,8 @@
       <input type="text" placeholder="试试搜索你的好友名字" @click="sousuo" />
     </div>
     <!-- 渲染列表 -->
-    <div class="center">
+    <div class="wrapper">
+      <div class="center">
       <div class="item" v-for="item in data1" :key="item.publishID">
         <div class="item-head">
           <p class="se">
@@ -15,17 +16,21 @@
           <span class="title">{{item.nick}}</span>
         </div>
         <p class="p1">{{item.txt}}</p>
+        <div v-for="(item,index) in item.comment" :key="index">{{item.nick}}：{{item.txt}}</div>
         <div class="p2">
           <span class="span1">
-            <i class="iconfont icon-dianzan"></i>
+            <i class="iconfont icon-dianzan" :class="{'red':item.zanFlag}" @click="zan(item.publishID)"></i>
             {{item.zanNum}}
           </span>
           <span class="span2">
-            <i class="iconfont icon-linedesign-01"></i>
+            <i class="iconfont icon-linedesign-01" @click="PL(item.publishID)"></i>
             {{item.pinglun}}
           </span>
+          <span class="iconfont icon-shoucang shoucang" :class="{'red':item.store}" @click="getSC(item.publishID)"></span>
         </div>
+        <div v-if="item.flag"> <input type="text" v-model="txt"/><button  @click="QDs({id:item.publishID,txt})">确定</button></div>
       </div>
+    </div>
     </div>
 
     <!-- 弹框 -->
@@ -37,13 +42,16 @@
 
 <script>
 import Dialog from "../../components/Dialog.vue";
-import { mapState, mapActions } from "vuex";
-
+import { mapState, mapActions, mapMutations } from "vuex";
+// import BScroll from 'better-scroll';
+// let center = document.querySelector('.center')
+//  new BScroll(center)
 export default {
   name: "",
   data() {
     return {
-      flag: false
+      flag: false,
+      txt:""
     };
   },
   components: {
@@ -53,10 +61,16 @@ export default {
     ...mapState(["data1"])
   },
   created() {
-    this.getList();
+    this.getList()
+    
   },
   methods: {
-    ...mapActions(["getList"]),
+    ...mapActions(["getList","getSC"]),
+    ...mapMutations(["zan","PL",'QD']),
+    QDs(obj){
+      this.QD(obj)
+      this.txt=""
+    },
     //   出现弹框
     zhaotan() {
       this.flag = true;
@@ -73,6 +87,14 @@ export default {
 };
 </script>
 <style >
+.shoucang{
+  position: absolute;
+  top: 15%;
+  right: 20px;
+}
+.red{
+  color: red;
+}
 .quan {
   display: flex;
   flex-direction: column;
@@ -106,6 +128,8 @@ export default {
 .quan .center {
   flex: 1;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
 }
 .quan .center .se {
   display: inline-block;
@@ -122,9 +146,10 @@ export default {
 .item {
   display: flex;
   flex-direction: column;
-  height: 150px;
+  flex: 1;
   margin: 0 25px;
   border-bottom: 1px solid red;
+  position:  relative;
 }
 .item .item-head {
   display: flex;
@@ -154,7 +179,6 @@ export default {
   padding-top: 30px;
 }
 .item .p2 i {
-  color: red;
   margin: 0 5px;
   font-weight: bold;
 }

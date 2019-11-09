@@ -10,7 +10,7 @@ module.exports = {
         before(app) {
             app.post('/login1', bodyparser.json(), (req, res) => {
                 let { username, passwd } = req.body
-                let obj = list1.find(item => item.name === username)
+                let obj = list1.find(item => item.name == username)
                 if (!obj) {
                     res.send({ code: 0, msg: "用户不存在" })
                 } else {
@@ -41,10 +41,23 @@ module.exports = {
                 if (index === -1) {
                     list1.push(obj)
                     fs.writeFileSync('./src/data/user.json', JSON.stringify(list1))
-                    res.send({ code: 1,obj , msg: "注册成功", token: new Date() * 1 })
+                    res.send({ code: 1, obj, msg: "注册成功", token: new Date() * 1 })
                 } else {
                     res.send({ code: 0, msg: "用户已注册" })
                 }
+            })
+
+            //收藏
+            app.post('/shoucang', bodyparser.json(), (req, res) => {
+                let { id } = req.body
+                let obj = list2.find(item => item.publishID == id)
+                obj.store = !obj.store
+                res.send(list2)
+            })
+            //收藏页
+            app.get('/scy',(req,res)=>{
+                let scdata = list2.filter(item =>item.store)
+                res.send(scdata)
             })
         }
     }
